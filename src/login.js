@@ -1,5 +1,5 @@
-import { useState, useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
+import { useLocation} from "react-router-dom";
 import { UserContext} from './index.js';
 import {Card} from './card.js';
 export function Login(){
@@ -25,13 +25,13 @@ export function Login(){
  
  //handling sign out when navbar button is pressed, and already on login route
  //if location.state is falsy nav sign-out but hasn't been hit away from login yet
-useEffect(() =>{
-  console.log('useEffect to handle sign-Off Button triggered away from login route')
-  // let navLoggedOut = location.state ? location.state.navLoggedOut : false;
-  // console.log('navLoggedOut',navLoggedOut); 
-  // if( navLoggedOut) handleSignOut();
-  if(location.state) handleSignOut();
-},[location.state && location.state.navLoggedOut])
+  // let novLoggedOut = location.state && location.state.navLoggedOut;
+  // if(location.state && location.state.navLoggedOut) {
+  //   console.log( 'login handling Nav SignOut Button')
+  //   handleSignOut();
+  //   location.state.navLoggedOut = false;
+  // }
+
 
 //handling just created account
 if(ctx.status.justCreatedFlag === true) fromCreate();
@@ -56,7 +56,7 @@ function fromCreate(){
     ctx.status.tempEmail= '';
     ctx.status.recentSignOut = false;
     setSMessage('');
-    reRenderNav(false);
+    reRenderNav();
   }
 
   function handleSignOut(){
@@ -69,7 +69,7 @@ function fromCreate(){
     setSMessage(`Thanks for using Bad Bank ${ctx.status.tempName}.
     you have successfully signed-out!`);
     ctx.status.recentSignOut = true;
-    reRenderNav(false);
+    reRenderNav();
   }
   //passing sign-out function to navbar to use when button clicked away from navpage
   if(ctx.tools.signOut === null){
@@ -109,9 +109,9 @@ function fromCreate(){
     if( !check4Empty(nameEmail, 'name or email')){         return;}
     if( !check4Empty(password, 'password')){               return;}
     
-    console.log('Attempting Login: ', nameEmail, '-', password)
+    console.log('Attempting Login: ', nameEmail, '-', password);
     const url = '/account/login/' + nameEmail +'/' +password;
-    let message = '';
+    //let message = '';
     (async () => {
       var res  = await fetch(url);
       var dataX = await res.json();
@@ -144,7 +144,7 @@ function fromCreate(){
         // let data = null;
         // ctx.history.push({userID, type, data});
         // return;
-        reRenderNav(true);
+        reRenderNav();
       }
     })();
   }
@@ -164,11 +164,11 @@ function fromCreate(){
   let userNameHeader = '';
   if( loggedIn){
     xHeader = `signed on as `;
-    userNameHeader = ctx.activeUser.name;
+    userNameHeader = ctx.activeUser.name || '';
   } else{
     if(recentSignOut){
       xHeader = `signed off as `;
-      userNameHeader = ctx.status.tempName;
+      userNameHeader = ctx.status.tempName || '';
     }
   }
   function LogInSignOutMessages(){

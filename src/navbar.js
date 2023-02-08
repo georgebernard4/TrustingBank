@@ -1,15 +1,26 @@
 // import React, { useState, useContext, useEffect } from "react";
-import React, { useState, useContext} from "react";
-import { useLocation, Navigate } from "react-router-dom";
+import React, { useState, useContext, useEffect} from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext} from './index.js';
 export function NavBar(){
  const [ loggedInZ, setLoggedInZ]  = useState(false);
   const ctx = useContext(UserContext);
   const location = useLocation();
-  //trigger to re-render navbar, always from the login page
-  // useEffect( setLoggedInZ(ctx && ctx.activeUser && ctx.activeUser.loggedIn),
-  //   [ ctx && ctx.activeUser && ctx.activeUser.loggedIn]);
+  const navigate = useNavigate();
+  //reacting to changed log status
+  function updateNavbar(){
+    setLoggedInZ( ctx.status.loggedIn);
+  }
+  
+  //putting tool in context object
+  ctx.tools.updateNavbar = updateNavbar;
+  if( ctx.activeUser && ctx.status.loggedIn === setLoggedInZ){
+    setLoggedInZ( ctx.status.loggedIn);
+  }
+
   //creating hoverOver messages
+  
+
   let hoverH = 'Welcome & learn a little about Bad Bank';
   let hoverC = 'create a new account\n and receive $100 credit';
   let hoverL  = 'acess your account'; 
@@ -25,13 +36,12 @@ export function NavBar(){
       console.log('executing signout from loggin')
       ctx.tools.signOut();
     }else{ 
-      console.log('executing signout AWAY from loggin')
+      console.log('executing Nav signout AWAY from login component')
       //toggling location.state.navLoggedOut, the locaction.state is added to the condition to ensure functionality when the location.state initializes without a navLoggedOut field
-      let newNavLoggedOut = !(location.state && location.state.navLoggedOut);
-      console.log('navigating from navbar, with location.state.navLoggedOut = ' , newNavLoggedOut);
-      Navigate( { 
-        pathname:"/login/", 
-         state:{ navLoggedOut: newNavLoggedOut}
+      //console.log('navigating from navbar, with location.state.navLoggedOut = ' , newNavLoggedOut);
+      ctx.tools.signOut();
+      navigate( { 
+        pathname:"/login/"
       });
     }
   };
@@ -44,7 +54,8 @@ export function NavBar(){
   let disabler      = '';
   if(loggedInZ){
     userName = ctx.activeUser.name ||''; 
-  }else{
+  }
+  else{
     disabler = ' disabled';
     hoverD=hoverW=hoverB= disabledHover;
     disabledHover = disabledHoverLable;

@@ -1,27 +1,18 @@
+
+
 var express = require('express');
 var app     = express();
 var cors    = require('cors');
 var dal     = require('./dal.js');
-const checkAccountOperation = require('./accountOperations.js');
-// handleAccountOperation
-//( email, password, amount, transactiontype) => [ true, null, endbalance] and updates db 
-//                                            or [false, partialApproval ammount, message, counter-proposal object]
 
-
+app.use(cors());
 
 
 //used to serve static files from public directory
-app.use(express.static('public'));
-app.use(cors());
+app.use(express.static('build'));
 
 // create user account
-// app.get('/account/create/:name/:email/:password', function (req, res){
-//   res.send({
-//     name:      req.params.name,
-//     email:     req.params.email,
-//     passsword: req.params.password
-//   });
-// });
+
 app.get('/account/create/:name/:email/:password', function (req, res){
   // else create user
   dal.create(req.params.name, req.params.email, req.params.password).
@@ -33,13 +24,7 @@ app.get('/account/create/:name/:email/:password', function (req, res){
 
 
 //all accounts
-// app.get('/account/all', function(req, res) {
-//   res.send({
-//     name:      'peter',
-//     email:     'peter@mit.edu',
-//     passsword: 'secret'
-//   });
-// });
+
 app.get('/account/all', function(req, res) {
 
   dal.all().
@@ -194,6 +179,10 @@ app.get('/account/login/:nameEmail/:password/', function(req, res){
     });
 
 
-var port = 3000;
-app.listen(port);
-console.log('Running on port: ' + port);
+
+
+// Start the Express server
+var port = process.env.PORT || 3000;
+app.listen(port, function () {
+  console.log('Express server listening on port', port);
+});
